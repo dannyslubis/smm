@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Gas Rumah Kaca Jakarta</title>
+    <style>
+        /* Mengatur penengah tampilan agar rapi di tengah layar browser */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a; /* Latar belakang gelap agar fokus pada simulasi */
+        }
+
+        /* Container utama simulasi dengan ukuran presisi 512x288 px */
+        #simulasi-container {
+            position: relative;
+            width: 512px;
+            height: 288px;
+            overflow: hidden; 
+            /* Hapus komentar border di bawah ini jika ingin melihat batas kanvas saat uji coba */
+            /* border: 1px solid #555; */
+        }
+
+        /* Mengatur semua gambar dan GIF (Lapisan 1-4) agar menempati posisi absolut */
+        #simulasi-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Mencegah gambar menghalangi klik pointer pada hitbox di atasnya */
+        }
+
+        /* Tombol transparan / Hitbox */
+        .hitbox {
+            position: absolute;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            /* Hapus tanda komentar di bawah jika ingin melihat letak pasti area klik (kotak merah) */
+            /* border: 1px solid rgba(255, 0, 0, 0.5); background-color: rgba(255, 0, 0, 0.2); */
+        }
+
+        /* Koordinat baru berdasarkan grid 16x9 (32x32px per tile) */
+        #btn-soo     { left: 160px; top: 96px; }  /* Koordinat f4 */
+        #btn-coo     { left: 192px; top: 32px; }  /* Koordinat g2 */
+        #btn-noo     { left: 256px; top: 64px; }  /* Koordinat i3 */
+        #btn-chhhh   { left: 320px; top: 0px; }   /* Koordinat k1 */
+        #btn-co      { left: 384px; top: 32px; }  /* Koordinat m2 */
+        #btn-cclclff { left: 448px; top: 64px; }  /* Koordinat o3 */
+    </style>
+</head>
+<body>
+
+    <div id="simulasi-container">
+        <img src="kanvassmm.png" alt="Kanvas Dasar">
+
+        <img src="smmdeco1.gif" alt="Awan dan Kepadatan Transportasi">
+
+        <img src="smmdeco2.gif" alt="Bus Jakarta">
+
+        <img src="smmmol.gif" alt="Molekul Gas Rumah Kaca">
+
+        <div id="btn-soo" class="hitbox" onclick="bukaPopUp('soo')" title="Belerang dioksida"></div>
+        <div id="btn-coo" class="hitbox" onclick="bukaPopUp('coo')" title="Karbon dioksida"></div>
+        <div id="btn-noo" class="hitbox" onclick="bukaPopUp('noo')" title="Nitrogen dioksida"></div>
+        <div id="btn-chhhh" class="hitbox" onclick="bukaPopUp('chhhh')" title="Metana"></div>
+        <div id="btn-co" class="hitbox" onclick="bukaPopUp('co')" title="Karbon monoksida"></div>
+        <div id="btn-cclclff" class="hitbox" onclick="bukaPopUp('cclclff')" title="Freon - 12"></div>
+    </div>
+
+    <script>
+        // Fungsi persiapan untuk menampilkan Pop-up Simulasi
+        function bukaPopUp(kodeSenyawa) {
+            // Untuk sementara, fungsi ini memunculkan pesan peringatan.
+            // Nantinya di sini kita bisa menambahkan logika untuk mengubah CSS display pop-up
+            // dan memuat konten yang sesuai dengan variabel 'kodeSenyawa'.
+            
+            console.log("Membuka data untuk file yang berkaitan dengan: " + kodeSenyawa);
+            alert("Sistem mendeteksi klik pada senyawa: " + kodeSenyawa.toUpperCase() + "\n(Fungsi pop-up akan ditambahkan pada tahap selanjutnya)");
+        }
+    </script>
+
+</body>
+</html>
