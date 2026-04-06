@@ -37,11 +37,11 @@
         .hitbox {
             position: absolute;
             cursor: pointer;
+            /* border: 1px solid red; background: rgba(255,0,0,0.2); /* Buka komentar ini jika ingin melihat letak kotak klik */
         }
 
         /* --- HITBOX KANVAS UTAMA --- */
-        /* Ukuran standar tile 32x32px */
-        .hitbox-utama { width: 32px; height: 32px; }
+        .hitbox-utama { width: 32px; height: 32px; z-index: 4; }
         
         #btn-soo     { left: 160px; top: 96px; }  /* f4 */
         #btn-coo     { left: 192px; top: 32px; }  /* g2 */
@@ -51,6 +51,18 @@
         #btn-cclclff { left: 448px; top: 64px; }  /* o3 */
 
 
+        /* --- LAYER OVERLAY GELAP --- */
+        #popup-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Hitam dengan Opacity 50% */
+            display: none; /* Tersembunyi di awal */
+            z-index: 5; /* Berada di atas kanvas utama, tapi di bawah pop-up */
+        }
+
         /* --- LAYER POP-UP --- */
         #popup-container {
             position: absolute;
@@ -58,8 +70,8 @@
             left: 0;
             width: 512px;
             height: 288px;
-            display: none; /* Disembunyikan di awal */
-            z-index: 10; /* Berada di atas kanvas utama */
+            display: none; /* Tersembunyi di awal */
+            z-index: 10; /* Berada paling atas */
         }
 
         /* --- HITBOX POP-UP --- */
@@ -84,9 +96,10 @@
         <div id="btn-co" class="hitbox hitbox-utama" onclick="bukaPopUp('co')" title="Karbon monoksida"></div>
         <div id="btn-cclclff" class="hitbox hitbox-utama" onclick="bukaPopUp('cclclff')" title="Freon - 12"></div>
 
+        <div id="popup-overlay" onclick="tutupPopUp()"></div>
+
         <div id="popup-container">
             <img id="popup-bg" src="" alt="Latar Informasi">
-            
             <img id="popup-anim" src="" alt="Animasi Molekul">
 
             <div id="btn-tutup" class="hitbox" onclick="tutupPopUp()" title="Tutup"></div>
@@ -96,72 +109,88 @@
     </div>
 
     <script>
-        // --- PRELOADER ---
-        // Memuat latar belakang info agar saat di-klik pop-up langsung muncul tanpa kedipan loading
+        // --- PRELOADER SUPER ROBUST ---
+        // Memaksa browser mengunduh semua aset ke memori sebelum dimainkan
+        // untuk memastikan tidak ada kedipan atau transisi lambat.
+        const asetPreload = [];
         window.onload = function() {
             const listSenyawa = ['soo', 'coo', 'noo', 'chhhh', 'co', 'cclclff'];
+            const ekstensi = ['info.png', 'c.gif', 'c1.gif', 'd.gif', 'd1.gif'];
+            
             listSenyawa.forEach(senyawa => {
-                const img = new Image();
-                img.src = `smm${senyawa}info.png`;
+                ekstensi.forEach(eks => {
+                    const img = new Image();
+                    img.src = `smm${senyawa}${eks}`;
+                    asetPreload.push(img);
+                });
             });
         };
 
         // --- VARIABEL GLOBAL ---
         let molekulAktif = ''; 
         let timerAnimasiPopUp; 
+        let sedangAnimasi = false; // Mencegah klik beruntun (spam klik) yang merusak transisi
+        
         const popupContainer = document.getElementById('popup-container');
+        const popupOverlay = document.getElementById('popup-overlay');
         const popupBg = document.getElementById('popup-bg');
         const popupAnim = document.getElementById('popup-anim');
-
-        // Fungsi agar GIF selalu diputar dari awal
-        function mainkanGif(namaFile) {
-            popupAnim.src = namaFile + "?t=" + new Date().getTime();
-        }
 
         // --- FUNGSI BUKA / TUTUP POP-UP ---
         function bukaPopUp(kodeSenyawa) {
             molekulAktif = kodeSenyawa;
+            sedangAnimasi = false;
             clearTimeout(timerAnimasiPopUp);
             
-            // Set gambar latar info dan animasi awal (keadaan bergabung/c)
+            // Keadaan default saat pop-up dibuka: molekul terpisah (d.gif)
             popupBg.src = `smm${kodeSenyawa}info.png`;
-            popupAnim.src = `smm${kodeSenyawa}c.gif`;
+            popupAnim.src = `smm${kodeSenyawa}d.gif`;
             
-            // Tampilkan pop-up
+            // Tampilkan overlay gelap dan pop-up
+            popupOverlay.style.display = 'block';
             popupContainer.style.display = 'block';
         }
 
         function tutupPopUp() {
+            popupOverlay.style.display = 'none';
             popupContainer.style.display = 'none';
             molekulAktif = '';
+            sedangAnimasi = false;
             clearTimeout(timerAnimasiPopUp);
+            // Mengosongkan gambar agar tidak membekas saat pop-up lain dibuka
+            popupBg.src = '';
+            popupAnim.src = ''; 
         }
 
         // --- FUNGSI TOMBOL POP-UP ---
         function aksiGabung() {
-            if (molekulAktif === '') return;
+            if (molekulAktif === '' || sedangAnimasi) return;
+            sedangAnimasi = true;
             clearTimeout(timerAnimasiPopUp);
 
-            // 1. Putar animasi transisi penyatuan (...d1.gif)
-            mainkanGif(`smm${molekulAktif}d1.gif`);
+            // Putar animasi transisi penyatuan (...d1.gif)
+            popupAnim.src = `smm${molekulAktif}d1.gif`;
 
-            // 2. Tunggu 1 detik (1000 ms), lalu tetapkan ke gambar bergabung (...c.gif)
+            // Potong 50ms (0,05 detik) lebih awal dari durasi asli 1000ms
+            // agar GIF tidak sempat mengulang (loop) yang menyebabkan kedipan.
             timerAnimasiPopUp = setTimeout(() => {
                 popupAnim.src = `smm${molekulAktif}c.gif`;
-            }, 1000);
+                sedangAnimasi = false;
+            }, 950); 
         }
 
         function aksiPisah() {
-            if (molekulAktif === '') return;
+            if (molekulAktif === '' || sedangAnimasi) return;
+            sedangAnimasi = true;
             clearTimeout(timerAnimasiPopUp);
 
-            // 1. Putar animasi transisi pemisahan (...c1.gif)
-            mainkanGif(`smm${molekulAktif}c1.gif`);
+            // Putar animasi transisi pemisahan (...c1.gif)
+            popupAnim.src = `smm${molekulAktif}c1.gif`;
 
-            // 2. Tunggu 1 detik (1000 ms), lalu tetapkan ke gambar terpisah (...d.gif)
             timerAnimasiPopUp = setTimeout(() => {
                 popupAnim.src = `smm${molekulAktif}d.gif`;
-            }, 1000);
+                sedangAnimasi = false;
+            }, 950);
         }
     </script>
 
