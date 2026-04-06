@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Gas Rumah Kaca</title>
+    <title>Simulasi Gas Rumah Kaca Jakarta</title>
     <style>
         /* Pengaturan latar belakang halaman */
         body {
@@ -37,7 +37,6 @@
         .hitbox {
             position: absolute;
             cursor: pointer;
-            /* border: 1px solid red; background: rgba(255,0,0,0.2); /* Buka komentar ini jika ingin melihat letak kotak klik */
         }
 
         /* --- HITBOX KANVAS UTAMA --- */
@@ -58,9 +57,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Hitam dengan Opacity 50% */
-            display: none; /* Tersembunyi di awal */
-            z-index: 5; /* Berada di atas kanvas utama, tapi di bawah pop-up */
+            /* Warna hitam dengan Opacity 75% sesuai permintaan */
+            background-color: rgba(0, 0, 0, 0.75); 
+            display: none; 
+            z-index: 5; 
         }
 
         /* --- LAYER POP-UP --- */
@@ -70,8 +70,8 @@
             left: 0;
             width: 512px;
             height: 288px;
-            display: none; /* Tersembunyi di awal */
-            z-index: 10; /* Berada paling atas */
+            display: none; 
+            z-index: 10; 
         }
 
         /* --- HITBOX POP-UP --- */
@@ -109,9 +109,7 @@
     </div>
 
     <script>
-        // --- PRELOADER SUPER ROBUST ---
-        // Memaksa browser mengunduh semua aset ke memori sebelum dimainkan
-        // untuk memastikan tidak ada kedipan atau transisi lambat.
+        // --- PRELOADER ---
         const asetPreload = [];
         window.onload = function() {
             const listSenyawa = ['soo', 'coo', 'noo', 'chhhh', 'co', 'cclclff'];
@@ -129,7 +127,7 @@
         // --- VARIABEL GLOBAL ---
         let molekulAktif = ''; 
         let timerAnimasiPopUp; 
-        let sedangAnimasi = false; // Mencegah klik beruntun (spam klik) yang merusak transisi
+        let sedangAnimasi = false; 
         
         const popupContainer = document.getElementById('popup-container');
         const popupOverlay = document.getElementById('popup-overlay');
@@ -142,11 +140,9 @@
             sedangAnimasi = false;
             clearTimeout(timerAnimasiPopUp);
             
-            // Keadaan default saat pop-up dibuka: molekul terpisah (d.gif)
             popupBg.src = `smm${kodeSenyawa}info.png`;
             popupAnim.src = `smm${kodeSenyawa}d.gif`;
             
-            // Tampilkan overlay gelap dan pop-up
             popupOverlay.style.display = 'block';
             popupContainer.style.display = 'block';
         }
@@ -157,7 +153,6 @@
             molekulAktif = '';
             sedangAnimasi = false;
             clearTimeout(timerAnimasiPopUp);
-            // Mengosongkan gambar agar tidak membekas saat pop-up lain dibuka
             popupBg.src = '';
             popupAnim.src = ''; 
         }
@@ -168,15 +163,13 @@
             sedangAnimasi = true;
             clearTimeout(timerAnimasiPopUp);
 
-            // Putar animasi transisi penyatuan (...d1.gif)
             popupAnim.src = `smm${molekulAktif}d1.gif`;
 
-            // Potong 50ms (0,05 detik) lebih awal dari durasi asli 1000ms
-            // agar GIF tidak sempat mengulang (loop) yang menyebabkan kedipan.
+            // Diubah menjadi 1.5 detik (1500ms). Dipotong 50ms agar animasi transisi tidak mengulang
             timerAnimasiPopUp = setTimeout(() => {
                 popupAnim.src = `smm${molekulAktif}c.gif`;
                 sedangAnimasi = false;
-            }, 950); 
+            }, 1450); 
         }
 
         function aksiPisah() {
@@ -184,13 +177,13 @@
             sedangAnimasi = true;
             clearTimeout(timerAnimasiPopUp);
 
-            // Putar animasi transisi pemisahan (...c1.gif)
             popupAnim.src = `smm${molekulAktif}c1.gif`;
 
+            // Diubah menjadi 1.5 detik (1500ms)
             timerAnimasiPopUp = setTimeout(() => {
                 popupAnim.src = `smm${molekulAktif}d.gif`;
                 sedangAnimasi = false;
-            }, 950);
+            }, 1450);
         }
     </script>
 
